@@ -25,7 +25,6 @@ const FlexBox = styled.div`
   position: relative;
   overflow-y: hidden;
   overflow-x: hidden;
-  width: 100vw;
   background-color: white;
 `;
 
@@ -46,5 +45,17 @@ const Wrap = styled.div`
     margin-right: 62%;
     width: 93px;
     height: 92px;
+  }
+  .loading {
+    position: absolute;
+    width: 225px;
+    height: 61px;
+    left: 3%;
+    top: 5%;
+  }
+  .background {
+    width: 100%;
+    position: absolute;
+    z-index: 0;
   }
 `;

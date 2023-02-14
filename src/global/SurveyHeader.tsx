@@ -23,7 +23,7 @@ export const SurveyHeader = ({
           />
         </div>
         <div>
-          <HiHome className="icon" size={24} />
+          <HiHome onClick={() => router.push("/")} className="icon" size={24} />
         </div>
       </HeadIcon>{" "}
       <HeadTxt>{title ? `${title}` : "양도소득세 환급받기"}</HeadTxt>

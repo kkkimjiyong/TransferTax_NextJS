@@ -32,7 +32,7 @@ export default function AssignStart() {
         <HelpTxt>
           *부동산(입주권, 분양권 포함) 외 자산은 검토대상이 아닙니다.
         </HelpTxt>
-        <BottomBtn onClick={() => router.push("/survey/transfer")}>
+        <BottomBtn onClick={() => router.push("/survey")}>
           {SurveyType} 환급 설문하기
         </BottomBtn>
       </Wrap>

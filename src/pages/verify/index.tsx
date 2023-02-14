@@ -15,6 +15,7 @@ import { BsFillCheckCircleFill } from "react-icons/bs";
 import { IoIosArrowForward } from "react-icons/io";
 import { useRouter } from "next/router";
 import axios from "axios";
+import LocalStorage from "@/utils/LocalStorage";
 
 type TuserInfo = {
   name: string;
@@ -77,7 +78,7 @@ export default function SurveyVerify() {
         "https://gdgd.shop/user/verify",
         payload
       );
-      localStorage.setItem("accessToken", response.data.accessToken);
+      LocalStorage.setItem("accessToken", response.data.accessToken);
       if ("already" in response.data) {
         setAlert(true);
       } else {
@@ -240,6 +241,7 @@ export default function SurveyVerify() {
       </Wrap>
       {/* 이미 진행한 적이 있으면, 알럿창 띄우기! */}
       <AlertModal
+        close={true}
         alert={alert}
         setAlert={setAlert}
         leftEvent={() => setAlert(false)}

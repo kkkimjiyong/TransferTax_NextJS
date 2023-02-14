@@ -32,31 +32,46 @@ export default function HomeTaxResult() {
       clearInterval(typingInterval);
     };
   });
+  // ----------------------   양도세 납부내역 데이터   --------------------
+  const [taxResult, setTaxResult] = useState<any>([
+    { id: 1, title: "납부항목명", data: "2022년", price: "30,975,220" },
+    { id: 2, title: "납부항목명", data: "2021년", price: "30,975,220" },
+    { id: 3, title: "납부항목명", data: "2020년", price: "30,975,220" },
+    { id: 4, title: "납부항목명", data: "2019년", price: "30,975,220" },
+    { id: 5, title: "납부항목명", data: "2018년", price: "30,975,220" },
+  ]);
 
   return (
-    <Layout>
+    <Wrap>
       <SurveyHeader undoPage={"/verify/result"} title={"양도세 납부내역"} />
       <ResultBox>
         {/* <div className="name">{JSON.parse(name).name}님의</div> */}
+        <Image className="img" src={TaxBackResult} alt="이미지" />{" "}
         <div className="name">김지용님의</div>
-        <div>양도세 납부 내역</div>
-        <Image className="img" src={TaxBackResult} alt="이미지" />
+        <div>최근 5년간 납부한 양도세는</div>
         <ResultNum>
-          <div className="title">총 납부 세액</div>{" "}
-          <div className="number">{resultNum}원</div>
+          <div className="number">
+            <span>{resultNum}원</span> 이에요
+          </div>
         </ResultNum>
       </ResultBox>{" "}
-      <SubTxt>* 최근 5년간의 신고자료를 통해 확인된 결과에요.</SubTxt>
-      <SubTxt>
-        * 보다 정확한 계산을 위해 <span className="mid">추가정보입력</span>을
-        통해 사업장의 상세정보를 입력해주세요.
-      </SubTxt>
+      <ResultModal>
+        {taxResult.map((result: any) => (
+          <Result key={result.id}>
+            <div>
+              {result.title}
+              <div className="subtxt">{result.data} 양도소득세</div>
+            </div>
+            <div>{result.price}원</div>
+          </Result>
+        ))}
+      </ResultModal>
       <ButtonBox>
         <Button onClick={() => router.push("/survey/start")}>
-          예상 가능 환급액 점검하기
+          양도소득세 환급받기
         </Button>
       </ButtonBox>
-    </Layout>
+    </Wrap>
   );
 }
 
@@ -73,11 +88,20 @@ const number = keyframes`
     transform:  scale(1);
   }
 `;
+const Wrap = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 375px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const ResultBox = styled.div`
-  padding: 10px 0;
+  padding: 10px 0 20px 0;
+  margin-bottom: -10px;
   margin-top: 160px;
-  margin-bottom: 5%;
   width: 90%;
   height: 42%;
   display: flex;
@@ -105,7 +129,7 @@ const ResultNum = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 3%;
+  margin-top: 5px;
   font-weight: 700;
   font-size: 21px;
   color: var(--color-sub);
@@ -155,5 +179,34 @@ const ButtonBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 20px;
+  margin-bottom: 50px;
+`;
+const ResultModal = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 30px;
+  align-items: center;
+  height: "300px";
+  transition: all 300ms ease-in-out;
+  width: 100%;
+  max-width: 375px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: white;
+  z-index: 2;
+  box-shadow: 0px -15px 20px -25px gray;
+`;
+
+const Result = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 90%;
+  .subtxt {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--color-gray);
+  }
 `;
