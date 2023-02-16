@@ -296,14 +296,10 @@ const NextBtn = styled.button`
 `;
 
 const ButtonBox = styled.div`
-  width: 90%;
+  width: 319px;
   height: 50px;
   display: flex;
   justify-content: space-between;
   margin-top: 50px;
-`;
-
-const Firework = styled.canvas`
-  position: absolute;
-  background-color: aliceblue;
+  z-index: 2;
 `;

@@ -1,9 +1,4 @@
-import React, {
-  ChangeEvent,
-  HTMLInputTypeAttribute,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { Layout } from "@/global/Layout";
@@ -29,8 +24,8 @@ export default function SurveyVerify() {
   const router = useRouter();
   const [checkList, setCheckList] = useState<string[]>([]);
   const AllCheck = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue("check1", true);
-    setValue("check2", true);
+    setValue("check1", !CheckedHandler("check1"));
+    setValue("check2", !CheckedHandler("check2"));
     e.target.checked ? setCheckList(["check1", "check2"]) : setCheckList([]);
   };
 
@@ -62,23 +57,50 @@ export default function SurveyVerify() {
     phoneNumber: yup
       .string()
       .required("전화번호를 입력해주세요")
+      .min(11, "전화번호 양식에 맞게 입력해주세요")
+      .max(13, "전화번호 양식에 맞게 입력해주세요")
       .matches(
         /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
-        "전화번호 양식에 맞게 입력해주세요"
+        "전화번호 정확하게 입력해주세요"
       ),
-    registerNumber: yup.string().required("빈칸을 입력해주세요"),
-    // .max(13, "13자리를 입력해주세요"),
-    check1: yup.bool().oneOf([true], "체크박스를 체크해주세요"),
-    check2: yup.bool().oneOf([true], "체크박스를 체크해주세요"),
+    registerNumber: yup
+      .string()
+      .required("빈칸을 입력해주세요")
+      .max(13, "13자리를 입력해주세요")
+      .min(13, "13자리를 입력해주세요")
+      .matches(
+        /\d{2}([0]\d|[1][0-2])([0][1-9]|[1-2]\d|[3][0-1])[-]*[1-4]\d{6}/g,
+        "주민등록번호 정확하게 입력해주세요"
+      ),
+    check1: yup
+      .bool()
+      .required("체크박스를 채워주세요")
+      .oneOf([true], "체크박스를 체크해주세요"),
+    check2: yup
+      .bool()
+      .required("체크박스를 채워주세요")
+      .oneOf([true], "체크박스를 체크해주세요"),
   });
 
-  const PostSurvey = async (payload: TuserInfo) => {
+  // const PostSurvey = async (payload: any) => {
+  //   try {
+  //     const response = await axios.post("https://getdata.tax-back.kr", payload);
+
+  //     navigate("/verify/done");
+
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  const PostSurvey2 = async (payload: any) => {
     try {
       const response = await axios.post(
         "https://gdgd.shop/user/verify",
         payload
       );
-      LocalStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("accessToken", response.data.accessToken);
+
       if ("already" in response.data) {
         setAlert(true);
       } else {
@@ -93,15 +115,19 @@ export default function SurveyVerify() {
 
   // 회원가입 submit 핸들러
   const SubmitHandler = (value: any): void => {
+    const formData = new FormData();
+    formData.append("name", value.name);
+    formData.append("phoneNumber", value.phoneNumber);
+    formData.append("registerNumber", value.registerNumber);
+
     console.log(value);
-    PostSurvey({ ...value, corporation: !toggle });
+    PostSurvey2({ ...value });
   };
 
   //useForm 설정
   const {
     register,
     setValue,
-    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<TuserInfo>({
@@ -110,7 +136,6 @@ export default function SurveyVerify() {
   });
 
   // 개인/법인 토글버튼 (기존값: 개인)
-  const [toggle, setToggle] = useState<boolean>(true);
   const [submit, setSubmit] = useState<boolean>(false);
   const [alert, setAlert] = useState<boolean>(false);
 
@@ -118,18 +143,11 @@ export default function SurveyVerify() {
     <Layout>
       <Wrap>
         <SurveyHeader title={`양도소득세 간편인증`} undoPage={`/`} />
-        <ToggleBox clicked={toggle}>
-          <ToggleBtn
-            clicked={toggle}
-            onClick={() => {
-              reset();
-              setToggle(!toggle);
-              setSubmit(false);
-            }}
-          />
-          <ToggleTxt clicked={toggle}>{!toggle ? "법인" : "개인"}</ToggleTxt>
-        </ToggleBox>
-        <InputBox error={!errors.name && submit} className="name">
+        <InputBox
+          collect={!errors.name && submit}
+          error={!errors.name}
+          className="name"
+        >
           <Label htmlFor="name">이름</Label>
           <Input
             className="name"
@@ -141,11 +159,15 @@ export default function SurveyVerify() {
           <BsFillCheckCircleFill className="icon" size={24} />
         </InputBox>{" "}
         {errors.name && <ErrorTxt>{errors.name.message}</ErrorTxt>}
-        <InputBox className="phoneNumber" error={!errors.phoneNumber && submit}>
+        <InputBox
+          className="phoneNumber"
+          collect={!errors.phoneNumber && submit}
+          error={!errors.phoneNumber}
+        >
           <Label htmlFor="phoneNumber">휴대폰번호</Label>
           <Input
             type={"text"}
-            maxLength={11}
+            maxLength={13}
             placeholder="휴대 전화번호를 입력해주세요.  - 제외"
             {...register("phoneNumber")}
           />
@@ -156,86 +178,73 @@ export default function SurveyVerify() {
         )}
         <InputBox
           className="registerNumber"
-          error={!errors.registerNumber && submit}
+          collect={!errors.registerNumber && submit}
+          error={!errors.registerNumber}
         >
-          {!toggle ? (
-            <>
-              <Label htmlFor="registerNumber">사업자등록번호</Label>
-              <Input
-                maxLength={10}
-                type={"text"}
-                placeholder="사업자등록번호를 입력해주세요"
-                {...register("registerNumber")}
-              />
-            </>
-          ) : (
-            <>
-              {" "}
-              <Label htmlFor="registerNumber">
-                주민등록번호
-                <span className="labelsub">
-                  * 법인사업자는 오른쪽 위 버튼을 눌러주세요.
-                </span>
-              </Label>
-              <Input
-                maxLength={13}
-                type={"text"}
-                placeholder="주민등록번호를 입력해주세요"
-                {...register("registerNumber")}
-              />
-            </>
-          )}
+          {" "}
+          <Label htmlFor="registerNumber">주민등록번호</Label>
+          <Input
+            maxLength={13}
+            type={"text"}
+            placeholder="주민등록번호를 입력해주세요"
+            {...register("registerNumber")}
+          />
           <BsFillCheckCircleFill className="icon" size={24} />
         </InputBox>
         {errors.registerNumber && (
           <ErrorTxt>{errors.registerNumber.message}</ErrorTxt>
         )}
-        <SubTxt>
-          * 환급을 위한 서비스 이외에 개인정보를 수집 및 이용을 하지 않습니다.
+        <SubTxt className="top">
+          • &nbsp; 환급을 위한 서비스 이외에 개인정보를 수집 및 이용을 하지
+          않습니다.
         </SubTxt>
-        <SubTxt>* 환급 완료 후 개인정보는 폐기합니다.</SubTxt>
+        <SubTxt>• &nbsp; 환급 완료 후 개인정보는 폐기합니다.</SubTxt>
         <CheckBox>
-          <div>
-            {" "}
+          <div className="flex">
             <input
+              className="input"
               name="allCheck"
               checked={checkList.length === 2 ? true : false}
               onChange={AllCheck}
               type={"checkbox"}
             />
-            아래 약관에 모두 동의합니다
+            <div className="text"> 아래 약관에 모두 동의합니다</div>
           </div>
         </CheckBox>
         <CheckBox className="sub">
-          <div>
+          <div className="flex">
             <input
+              className="input"
               {...register("check1")}
               name="check1"
               checked={CheckedHandler("check1")}
               onChange={ChangeCheck}
               type={"checkbox"}
             />
-            [필수] 정보제공범위 동의
+            <div className="text"> [필수] 정보제공범위 동의</div>
           </div>
-
           <IoIosArrowForward />
         </CheckBox>
         {errors.check1 && <ErrorTxt>{errors.check1.message}</ErrorTxt>}
         <CheckBox className="sub">
-          <div>
+          <div className="flex">
             <input
+              className="input"
               {...register("check2")}
               name="check2"
               onChange={ChangeCheck}
               checked={CheckedHandler("check2")}
               type={"checkbox"}
             />
-            [필수] 법인세 신고 도움자료
+            <div className="text"> [필수] 법인세 신고 도움자료</div>
           </div>
           <IoIosArrowForward />
         </CheckBox>
         {errors.check2 && <ErrorTxt>{errors.check2.message}</ErrorTxt>}
-        <BottomBtn onClick={handleSubmit(SubmitHandler, () => setSubmit(true))}>
+        <BottomBtn
+          onClick={handleSubmit(SubmitHandler, () => setSubmit(true))}
+          // onClick={() => navigate("/verify/done")}
+        >
           홈택스 간편인증 하기
         </BottomBtn>
       </Wrap>
@@ -256,28 +265,28 @@ export default function SurveyVerify() {
 
 const Wrap = styled.form`
   position: relative;
-  height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
 `;
 
-const InputBox = styled.div<{ error: boolean }>`
+const InputBox = styled.div<{ collect: boolean; error: boolean }>`
   position: relative;
   display: flex;
   justify-content: center;
   flex-direction: column;
   border-radius: 10px;
-  margin-top: 15px;
+  margin-top: 10px;
   margin-bottom: 3px;
-  width: 86%;
-  height: 8%;
-  padding: 2%;
-  background-color: ${({ error }) =>
-    error ? " #e8e7ff" : "var(--color-inputBox)"};
+  height: 50px;
+  width: 303px;
+  padding: 10px 15px;
+  border: ${({ error }) => !error && "2px solid var(--color-red)"};
+  background-color: ${({ collect }) =>
+    collect ? " #e8e7ff" : "var(--color-inputBox)"};
   .icon {
-    opacity: ${({ error }) => (error ? "1" : "0")};
+    opacity: ${({ collect }) => (collect ? "1" : "0")};
     transition: all 400ms ease-in-out;
     right: 20px;
     position: absolute;
@@ -288,45 +297,9 @@ const InputBox = styled.div<{ error: boolean }>`
   }
 `;
 
-const ToggleBox = styled.div<{ clicked: boolean }>`
-  position: absolute;
-  left: 75%;
-  top: 16%;
-  width: 50px;
-  height: 30px;
-  border-radius: 30px;
-  background-color: ${({ clicked }) =>
-    clicked ? "var(--color-lightSub)" : "var(--color-midSub)"};
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  justify-content: "flex-end";
-  align-items: center;
-  padding: 0 5px;
-  box-shadow: inset 0px 3px 5px 0px rgb(100, 99, 99);
-`;
-
-const ToggleTxt = styled.div<{ clicked: boolean }>`
-  color: var(--color-main);
-  left: -30px;
-  position: absolute;
-`;
-const ToggleBtn = styled.div<{ clicked: boolean }>`
-  position: absolute;
-  transition: all 200ms ease-in-out;
-  left: ${({ clicked }) => (clicked ? "3px" : "33px")};
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background-color: var(--color-inputBox);
-  box-shadow: 0px 1px 5px 0px #747474;
-  z-index: 2;
-  :hover {
-    cursor: pointer;
-  }
-`;
-
 const Input = styled.input`
+  color: var(--color-midSub);
+  font-weight: 400;
   font-size: 16px;
   ::placeholder {
     font-size: 12px;
@@ -337,7 +310,7 @@ const Input = styled.input`
   border: none;
   background-color: transparent;
   height: 100%;
-  width: 65%;
+  width: 75%;
   padding: 2% 1%;
   &.recommand {
     width: 100%;
@@ -346,7 +319,6 @@ const Input = styled.input`
 
 const Label = styled.label`
   font-size: 14px;
-  margin-bottom: 5px;
   margin-left: 3px;
   display: flex;
   align-items: center;
@@ -362,35 +334,51 @@ const ErrorTxt = styled.div`
   align-items: center;
   width: 90%;
   font-size: 12px;
-  margin-left: 7px;
+  margin-left: 30px;
   color: #d80505;
 `;
 
 const SubTxt = styled.div`
   width: 90%;
   font-size: 10px;
+  margin-left: 22px;
   color: var(--color-gray);
+  &.top {
+    margin-top: 5px;
+  }
 `;
 
 const CheckBox = styled.div`
-  margin-top: 7%;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 90%;
+  height: 20px;
   font-size: 18px;
   color: var(--color-thickSub);
-  margin-bottom: 2%;
+  margin-bottom: 10px;
   &.sub {
     margin-top: 0%;
     color: black;
     font-size: 13px;
     margin-bottom: 1%;
   }
+  .flex {
+    display: flex;
+  }
+  .input {
+    transform: scale(1.2);
+  }
+  .text {
+    margin-bottom: 3px;
+  }
 `;
 
-const BottomBtn = styled.div`
+const BottomBtn = styled.button`
   margin-top: 50px;
+  margin-bottom: 50px;
+  border: none;
   width: 80%;
   font-size: 1rem;
   font-weight: 600;
@@ -401,9 +389,6 @@ const BottomBtn = styled.div`
   align-items: center;
   justify-content: center;
   padding: 3% 0;
-  &.estateButton {
-    bottom: 12%;
-  }
   :hover {
     cursor: pointer;
   }

@@ -3,7 +3,7 @@ import { Layout } from "@/global/Layout";
 import { ResultBox } from "@/components/edit/ResultBox";
 import styled from "styled-components";
 import { surveyApi } from "@/instance";
-import Loading from "@/global/loading";
+import Loading from "@/global/Loading";
 import { AlertModal } from "@/global/AlertModal";
 import { useRouter } from "next/router";
 import BackGroundLogo from "@/Assets/Image/BackGround_Logo.png";

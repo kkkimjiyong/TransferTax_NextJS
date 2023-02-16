@@ -4,16 +4,16 @@ import { Layout } from "@/global/Layout";
 import BackGroundLogo from "@/Assets/Image/BackGround_Logo.png";
 import TaxBackRowLogo from "@/Assets/Image/TaxBack_Row_Logo.png";
 import Image from "next/image";
+import { GetStaticProps } from "next";
+
 export default function Loading() {
   return (
-    <Layout>
-      <Image className="background" src={BackGroundLogo} alt={"바탕로고"} />
-      <Image className="loading" src={TaxBackRowLogo} alt="로고" />{" "}
+    <Container>
       <Wrap>
         <Spinner></Spinner>
-        <HelpTxt>잠시만 기다려 주세요..</HelpTxt>
+        {/* <HelpTxt>잠시만 기다려 주세요..</HelpTxt> */}
       </Wrap>
-    </Layout>
+    </Container>
   );
 }
 
@@ -42,16 +42,27 @@ const HelpTxt = styled.div`
   font-weight: 700;
 `;
 
-const Wrap = styled.div`
+const Container = styled.div`
+  z-index: 996;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const Wrap = styled.div`
+  z-index: 998;
+  margin: 0 auto;
   width: 100vw;
+  max-width: 375px;
   height: 100vh;
-  background-color: transparent;
+  background: rgba(255, 255, 255, 0.719);
 `;
 
 const Spinner = styled.div`
+  z-index: 999;
   box-sizing: border-box;
   position: absolute;
   top: 50%;
@@ -66,3 +77,9 @@ const Spinner = styled.div`
   border-bottom-color: var(--color-main);
   animation: ${spin} 0.8s ease infinite;
 `;
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {},
+  };
+};

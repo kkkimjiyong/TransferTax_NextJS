@@ -20,7 +20,7 @@ body {
     font-size: 1rem;
     font-weight: 500;
     overflow: overlay;
-
+margin: 0;
 }
 :root {
     //메인컬러
@@ -33,6 +33,8 @@ body {
     --color-lightSub :   #BFB9D9;
     //중간 서브컬러 (네이밍어케하지)
     --color-midSub : #7548FF;
+        //레드컬러
+        --color-red : #E11960;
     // Input 박스 배경색
     --color-inputBox : #faf9ff;
     // content 박스 배경색 
@@ -53,7 +55,6 @@ body {
 }
 
 span {
-    color: #8563f5;
 &.main {
     color: #4323A7;
 }

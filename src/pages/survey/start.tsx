@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { SurveyHeader } from "@/global/SurveyHeader";
 import { Layout } from "@/global/Layout";
 import axios from "axios";
@@ -40,6 +40,17 @@ export default function AssignStart() {
   );
 }
 
+const smoothAppear = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const Wrap = styled.div`
   position: relative;
   height: 100%;
@@ -50,6 +61,7 @@ const Wrap = styled.div`
 `;
 
 const ConsultingBox = styled.div`
+  animation: ${smoothAppear} 1s linear;
   display: flex;
   flex-direction: column;
   margin-top: 40%;
@@ -77,12 +89,15 @@ const ConsultingBtn = styled.div`
 `;
 
 const TextBox = styled.div`
+  animation: ${smoothAppear} 1s linear;
   width: 90%;
   text-align: start;
   margin-top: 5%;
   font-size: 0.9rem;
 `;
 const HelpTxt = styled.div`
+  animation: ${smoothAppear} 1s linear;
+
   margin-top: 10px;
   width: 90%;
   font-size: 12px;
@@ -91,8 +106,11 @@ const HelpTxt = styled.div`
 `;
 
 const BottomBtn = styled.div`
-  margin-top: 90px;
-  width: 80%;
+  animation: ${smoothAppear} 1s linear;
+  position: fixed;
+  bottom: 50px;
+  width: 319px;
+  height: 50px;
   font-size: 1rem;
   font-weight: 600;
   color: white;
@@ -101,7 +119,6 @@ const BottomBtn = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3% 0;
   :hover {
     color: var(--color-lightSub);
     cursor: pointer;

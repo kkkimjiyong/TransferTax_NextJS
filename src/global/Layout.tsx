@@ -10,17 +10,6 @@ export const Layout = ({ children }: { children: any }) => {
   );
 };
 
-const smoothAppear = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-10%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
 const FlexBox = styled.div`
   position: relative;
   overflow-y: hidden;
@@ -29,7 +18,6 @@ const FlexBox = styled.div`
 `;
 
 const Wrap = styled.div`
-  animation: ${smoothAppear} 1s;
   position: relative;
   display: flex;
   flex-direction: column;

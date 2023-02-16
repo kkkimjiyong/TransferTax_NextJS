@@ -34,35 +34,41 @@ export default function HomeTaxResult() {
   });
   // ----------------------   양도세 납부내역 데이터   --------------------
   const [taxResult, setTaxResult] = useState<any>([
-    { id: 1, title: "납부항목명", data: "2022년", price: "30,975,220" },
-    { id: 2, title: "납부항목명", data: "2021년", price: "30,975,220" },
-    { id: 3, title: "납부항목명", data: "2020년", price: "30,975,220" },
-    { id: 4, title: "납부항목명", data: "2019년", price: "30,975,220" },
-    { id: 5, title: "납부항목명", data: "2018년", price: "30,975,220" },
+    { title: "2022년", price: "30,975,220" },
+    { title: "2021년", price: "30,975,220" },
+    { title: "2020년", price: "30,975,220" },
+    { title: "2019년", price: "30,975,220" },
+    { title: "2018년", price: "30,975,220" },
   ]);
 
+  // ------------------  모달 상태관리   ----------------------
+  const [modal, setModal] = useState<boolean>(false);
+  useEffect(() => {
+    setModal(true);
+  }, []);
   return (
     <Wrap>
-      <SurveyHeader undoPage={"/verify/result"} title={"양도세 납부내역"} />
+      <SurveyHeader
+        undoPage={"/verify/result"}
+        title={"양도소득세 납부내역 확인"}
+      />
       <ResultBox>
         {/* <div className="name">{JSON.parse(name).name}님의</div> */}
         <Image className="img" src={TaxBackResult} alt="이미지" />{" "}
         <div className="name">김지용님의</div>
-        <div>최근 5년간 납부한 양도세는</div>
+        <div>최근 5년간 납부한 양도소득세는</div>
         <ResultNum>
           <div className="number">
-            <span>{resultNum}원</span> 이에요
+            <span className="sub">{resultNum}원</span> 이에요
           </div>
         </ResultNum>
       </ResultBox>{" "}
-      <ResultModal>
+      <ResultModal modal={modal}>
         {taxResult.map((result: any) => (
           <Result key={result.id}>
-            <div>
-              {result.title}
-              <div className="subtxt">{result.data} 양도소득세</div>
-            </div>
-            <div>{result.price}원</div>
+            <div className="title">{result.title}</div>
+            <div className="dash"></div>
+            <div className="price">{result.price}원</div>
           </Result>
         ))}
       </ResultModal>
@@ -101,7 +107,7 @@ const Wrap = styled.div`
 const ResultBox = styled.div`
   padding: 10px 0 20px 0;
   margin-bottom: -10px;
-  margin-top: 160px;
+  margin-top: 140px;
   width: 90%;
   height: 42%;
   display: flex;
@@ -132,11 +138,13 @@ const ResultNum = styled.div`
   margin-top: 5px;
   font-weight: 700;
   font-size: 21px;
-  color: var(--color-sub);
   .title {
     font-size: 22px;
     color: var(--color-main);
     margin-right: 3%;
+  }
+  .sub {
+    color: var(--color-sub);
   }
   .number {
     animation: ${number} 1s;
@@ -181,14 +189,18 @@ const ButtonBox = styled.div`
   justify-content: center;
   margin-top: 20px;
   margin-bottom: 50px;
+  z-index: 2;
 `;
-const ResultModal = styled.div`
+const ResultModal = styled.div<{ modal: boolean }>`
+  opacity: ${({ modal }) => (modal ? "1" : "0")};
+  transform: ${({ modal }) =>
+    modal ? "translateY(0px)" : "translateY(120px)"};
   display: flex;
   flex-direction: column;
   padding-top: 30px;
   align-items: center;
   height: "300px";
-  transition: all 300ms ease-in-out;
+  transition: all 600ms ease-in-out;
   width: 100%;
   max-width: 375px;
   border-top-left-radius: 20px;
@@ -208,5 +220,14 @@ const Result = styled.div`
     margin-top: 3px;
     font-size: 12px;
     color: var(--color-gray);
+  }
+  .price {
+    font-weight: 700;
+    color: var(--color-thickSub);
+  }
+  .dash {
+    width: 140px;
+    transform: scaleY(0.2);
+    border-bottom: 2px dashed gray;
   }
 `;

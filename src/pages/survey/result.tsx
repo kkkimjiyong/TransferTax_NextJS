@@ -8,6 +8,8 @@ import { TextModal } from "@/global/TextModal";
 import { useRouter } from "next/router";
 import { userApi } from "@/instance";
 import Image from "next/image";
+import { GetStaticProps } from "next";
+import LocalStorage from "@/utils/LocalStorage";
 
 export default function TransferSurveyResult() {
   const router = useRouter();
@@ -69,7 +71,7 @@ const TextBox = styled.div`
   width: 90%;
   margin-top: 153px;
   &.subText {
-    margin-top: 10px;
+    margin-top: 5px;
     font-weight: 500;
     font-size: 16px;
   }
@@ -83,10 +85,14 @@ const LookUpBtn = styled.div`
   font-weight: 700;
   font-size: 12px;
   color: white;
-  margin-top: 20px;
-  padding: 2.2% 2.5%;
+  margin-top: 15px;
+  width: 116px;
+  height: 32px;
   border-radius: 30px;
   background-color: var(--color-midSub);
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const ImageBox = styled.div`
@@ -110,7 +116,9 @@ const ImageTextBox = styled.div`
   text-align: center;
   margin-top: 2%;
   width: 90%;
+  color: var(--color-thickSub);
   .bold {
+    color: var(--color-midSub);
     font-size: 18px;
   }
 `;
@@ -131,3 +139,9 @@ const BottomBtn = styled.div`
     cursor: pointer;
   }
 `;
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {},
+  };
+};
